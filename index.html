@@ -733,8 +733,8 @@
                 const status = document.getElementById('fetchStatus');
                 status.innerHTML = 'Fetching... <span class="spinner"></span>';
 
-		const url =
-   		 `https://api.allorigins.win/raw?url=https://services.runescape.com/m=hiscore/index_lite.ws?player=${encodeURIComponent(rsn)}`;
+const url =
+    `https://thingproxy.freeboard.io/fetch/https://services.runescape.com/m=hiscore/index_lite.ws?player=${encodeURIComponent(rsn)}`;
 
                 fetch(url)
                     .then(res => {
