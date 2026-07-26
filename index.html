@@ -734,7 +734,8 @@
                 status.innerHTML = 'Fetching... <span class="spinner"></span>';
 
 const url =
-    `https://corsproxy.io/?url=https://services.runescape.com/m=hiscore/index_lite.ws?player=${encodeURIComponent(rsn)}`;
+   const url =
+    `https://api.allorigins.win/raw?url=${encodeURIComponent('https://services.runescape.com/m=hiscore/index_lite.ws?player=' + rsn)}&_=${Date.now()}`;
 
                 fetch(url)
                     .then(res => {
