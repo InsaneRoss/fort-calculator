@@ -746,7 +746,7 @@ const url =
                         const lines = data.split('\n');
                         if (lines.length < 5) throw new Error('Invalid response');
 
-                        const conLine = lines[5] || '';
+                        const conLine = lines[23] || '';
                         const parts = conLine.split(',');
                         if (parts.length < 3) throw new Error('Construction data not found');
 
