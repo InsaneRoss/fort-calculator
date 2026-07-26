@@ -734,7 +734,7 @@
                 status.innerHTML = 'Fetching... <span class="spinner"></span>';
 
 const url =
-    `https://thingproxy.freeboard.io/fetch/https://services.runescape.com/m=hiscore/index_lite.ws?player=${encodeURIComponent(rsn)}`;
+    `https://corsproxy.io/?url=https://services.runescape.com/m=hiscore/index_lite.ws?player=${encodeURIComponent(rsn)}`;
 
                 fetch(url)
                     .then(res => {
