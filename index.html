@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fort Forinthry Banked XP Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        }
+        body {
+            background: #0f121a;
+            color: #e8edf5;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1300px;
+            width: 100%;
+            background: #1a1e2b;
+            border-radius: 12px;
+            padding: 24px 22px 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            border: 1px solid #2a3145;
+        }
+
+        .wiki-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 2px solid #3a445f;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .wiki-header h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin: 0;
+            color: #d6def5;
+            letter-spacing: 0.3px;
+        }
+        .wiki-header .icon {
+            font-size: 2rem;
+        }
+
+        .card {
+            background: #151d2b;
+            border-radius: 10px;
+            padding: 16px 18px 18px;
+            border: 1px solid #29304a;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-weight: 500;
+            font-size: 1.05rem;
+            color: #c8d0e6;
+            margin-top: 0;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #252e45;
+            padding-bottom: 8px;
+        }
+        .card-title .badge {
+            font-size: 0.7rem;
+            background: #2f3850;
+            padding: 0 10px;
+            border-radius: 12px;
+            color: #9aa5c1;
+            font-weight: 400;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 24px;
+            align-items: center;
+        }
+        .flex-row label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #b3c0e2;
+        }
+        .flex-row select,
+        .flex-row input[type="text"] {
+            background: #0e131f;
+            border: 1px solid #323d5a;
+            color: #f0f4ff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .flex-row input[type="text"] {
+            width: 140px;
+        }
+        .flex-row input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #6a8af0;
+            cursor: pointer;
+        }
+        .flex-row button {
+            background: #2f3850;
+            border: none;
+            color: white;
+            padding: 5px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .flex-row button:hover {
+            background: #3f4a66;
+        }
+        .flex-row .goal-input {
+            width: 140px;
+        }
+        .flex-row .goal-select {
+            width: 80px;
+        }
+        .flex-row .xp-input {
+            width: 140px;
+        }
+
+        .wood-section {
+            border: 1px solid #232b42;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            background: #111826;
+        }
+        .wood-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.1s;
+        }
+        .wood-header:hover {
+            background: #1a2238;
+        }
+        .wood-header input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #6a8af0;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .wood-header .wood-name {
+            font-weight: 500;
+            color: #d6def5;
+            min-width: 80px;
+        }
+        .wood-header .wood-summary {
+            font-size: 0.8rem;
+            color: #7f8bb3;
+            margin-left: auto;
+        }
+        .wood-header .toggle-icon {
+            color: #5f7ac0;
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+        .wood-header .toggle-icon.open {
+            transform: rotate(90deg);
+        }
+        .wood-body {
+            padding: 0 12px 10px 12px;
+            display: none;
+        }
+        .wood-body.open {
+            display: block;
+        }
+        .wood-body .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 4px 0;
+        }
+        .wood-body .input-row label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #b3c0e2;
+        }
+        .wood-body .input-row label .label-text {
+            width: 60px;
+            text-align: right;
+        }
+        .wood-body .input-row input[type="text"] {
+            width: 120px;
+            background: #0a0f19;
+            border: 1px solid #29314a;
+            color: #fff;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: right;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+        .wood-body .input-row input[type="text"]:focus {
+            border-color: #6a8af0;
+            outline: none;
+            background: #121a2a;
+        }
+
+        .btn {
+            background: #4d6cd9;
+            border: none;
+            color: white;
+            padding: 11px 36px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            margin: 6px 0 10px;
+            box-shadow: 0 4px 14px rgba(60, 100, 230, 0.25);
+        }
+        .btn:hover {
+            background: #5f7cee;
+            transform: scale(1.02);
+        }
+
+        .result-area {
+            background: #111826;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-top: 18px;
+            border: 1px solid #2a3250;
+            display: none;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        .stat-box {
+            background: #0e141f;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #5f7ac0;
+        }
+        .stat-box .label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #7f8bb3;
+        }
+        .stat-box .value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+        .stat-box .value.gold { color: #f5d742; }
+        .stat-box .value.green { color: #6fcf97; }
+        .stat-box .value.blue { color: #7a9cf5; }
+        .stat-box .value.orange { color: #ffb74d; }
+        .stat-box .value.purple { color: #b388ff; }
+        .stat-box .value.cyan { color: #4dd0e1; }
+        .stat-box .value.pink { color: #f48fb1; }
+
+        .wood-breakdown {
+            margin-top: 14px;
+            background: #0e141f;
+            border-radius: 8px;
+            padding: 12px 14px;
+            border: 1px solid #212a42;
+            overflow-x: auto;
+        }
+        .wood-breakdown table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 650px;
+        }
+        .wood-breakdown th {
+            background: #0a101c;
+            padding: 8px 6px;
+            text-align: center;
+            color: #8f9ec9;
+            font-weight: 500;
+            border-bottom: 2px solid #2a3250;
+            white-space: nowrap;
+        }
+        .wood-breakdown td {
+            padding: 6px 4px;
+            text-align: center;
+            border-bottom: 1px solid #1a2238;
+            transition: background 0.15s;
+        }
+        .wood-breakdown .clickable-row {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .wood-breakdown .clickable-row:hover {
+            background: #1a2340;
+        }
+        .wood-breakdown .clickable-row td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: #d6def5;
+        }
+        .wood-breakdown .building-tag {
+            background: #1f2a44;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #b8ccff;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .wood-breakdown .total-row {
+            border-top: 2px solid #3a445f;
+            font-weight: 600;
+            color: #f5d742;
+        }
+        .wood-breakdown .total-row td {
+            padding: 8px 4px;
+        }
+        .wood-breakdown .col-afk {
+            color: #f5d742;
+        }
+        .wood-breakdown .col-active {
+            color: #4dd0e1;
+        }
+        .wood-breakdown .expand-icon {
+            display: inline-block;
+            transition: transform 0.2s;
+            font-size: 0.7rem;
+            color: #5f7ac0;
+            margin-right: 4px;
+        }
+        .wood-breakdown .expand-icon.open {
+            transform: rotate(90deg);
+        }
+
+        /* Expanded row details - cleaner version */
+        .breakdown-detail {
+            display: none;
+            background: #0a101c;
+            border-bottom: 1px solid #1a2238;
+        }
+        .breakdown-detail.open {
+            display: table-row;
+        }
+        .breakdown-detail .detail-inner {
+            padding: 10px 16px;
+            background: #111826;
+            border-left: 3px solid #5f7ac0;
+            text-align: left;
+            color: #c8d0e6;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        .breakdown-detail .detail-inner .detail-title {
+            font-weight: 600;
+            color: #d6def5;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        /* Chain line */
+        .breakdown-detail .detail-inner .chain {
+            color: #b3c0e2;
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 4px 0;
+            border-bottom: 1px solid #1a2238;
+            margin-bottom: 6px;
+        }
+        .breakdown-detail .detail-inner .chain .highlight {
+            color: #f5d742;
+        }
+        .breakdown-detail .detail-inner .chain .highlight-active {
+            color: #4dd0e1;
+        }
+        /* Stats grid - 2 columns */
+        .breakdown-detail .detail-inner .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 16px;
+            padding: 4px 0;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px solid #141c2a;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item .label {
+            color: #7f8bb3;
+            font-size: 0.75rem;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item .value {
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item .value.gold {
+            color: #f5d742;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item .value.cyan {
+            color: #4dd0e1;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item .value.green {
+            color: #6fcf97;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item .value.orange {
+            color: #ffb74d;
+        }
+        .breakdown-detail .detail-inner .stats-grid .stat-item .value.blue {
+            color: #7a9cf5;
+        }
+        /* XP formula note */
+        .breakdown-detail .detail-inner .formula-note {
+            font-size: 0.7rem;
+            color: #6a78a0;
+            border-top: 1px solid #1a2238;
+            padding-top: 4px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 700px) {
+            .breakdown-detail .detail-inner .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .breakdown-detail .detail-inner .stats-grid .stat-item {
+                padding: 1px 0;
+            }
+            .container { padding: 14px; }
+            .wiki-header h1 { font-size: 1.3rem; }
+            .wood-breakdown table { font-size: 0.7rem; min-width: 550px; }
+            .wood-breakdown td, .wood-breakdown th { padding: 4px 2px; }
+            .breakdown-detail .detail-inner { font-size: 0.75rem; padding: 8px 10px; }
+        }
+
+        .warning-box {
+            background: #1f1a0e;
+            border-left: 3px solid #f5a342;
+            padding: 8px 14px;
+            border-radius: 6px;
+            color: #f5c88a;
+            margin-top: 8px;
+            display: none;
+        }
+        .text-muted {
+            color: #7f8bb3;
+            font-size: 0.8rem;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #2f3850;
+            border-top: 2px solid #6a8af0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wiki-header">
+            <span class="icon">🏰</span>
+            <h1>Fort Forinthry Banked XP</h1>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📊 Stats &amp; Boosts</div>
+            <div class="flex-row">
+                <label>👤 Username <input type="text" id="rsnInput" placeholder="Enter username"></label>
+                <button id="fetchHiscoreBtn">🔍 Lookup</button>
+                <span id="fetchStatus" class="text-muted"></span>
+            </div>
+            <div class="flex-row" style="margin-top:8px;">
+                <label>📈 Current XP <input type="text" id="currentXp" class="xp-input" value="0"></label>
+            </div>
+            <div class="flex-row" style="margin-top:8px;">
+                <label>🎯 Goal
+                    <input type="text" id="goalValue" class="goal-input" value="200,000,000">
+                    <select id="goalType" class="goal-select">
+                        <option value="xp">XP</option>
+                        <option value="level">Level</option>
+                    </select>
+                </label>
+            </div>
+            <div class="flex-row" style="margin-top:10px;">
+                <label>👷 Constructor outfit
+                    <select id="outfitPieces">
+                        <option value="0">0 pieces</option>
+                        <option value="0.01">1</option>
+                        <option value="0.02">2</option>
+                        <option value="0.03">3</option>
+                        <option value="0.04">4</option>
+                        <option value="0.06" selected>5</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="chiselCheck"> 🔨 Sculpting Chisel <span class="text-muted">(+1%)</span></label>
+                <label><input type="checkbox" id="relicCheck"> ⚡ Inspire Genius <span class="text-muted">(+2%)</span></label>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🪵 Banked Materials <span class="badge">check each wood type you want to use</span></div>
+            <div id="woodTypeContainer"></div>
+        </div>
+
+        <button class="btn" id="calcBtn">🧮 Calculate Banked XP</button>
+
+        <div id="resultArea" class="result-area">
+            <div class="result-grid" id="resultStats"></div>
+            <div class="wood-breakdown" id="woodBreakdown">
+                <div style="font-weight:500;color:#c8d0e6;margin-bottom:6px;">📋 Breakdown by Wood Type <span style="font-weight:400;font-size:0.7rem;color:#7f8bb3;">(click a row to expand)</span></div>
+                <div id="breakdownTableWrap"></div>
+            </div>
+        </div>
+
+        <div id="warningBox" class="warning-box"></div>
+    </div>
+
+    <script>
+        (function() {
+            const TIERS = ['Normal', 'Oak', 'Willow', 'Teak', 'Maple', 'Acadia', 'Mahogany', 'Yew', 'Magic', 'Elder',
+                'Eternal'
+            ];
+
+            const XP_LOG_TO_PLANK = { 'Normal': 3, 'Oak': 4.5, 'Willow': 6.5, 'Teak': 9, 'Maple': 12, 'Acadia': 15,
+                'Mahogany': 19, 'Yew': 24, 'Magic': 29, 'Elder': 34, 'Eternal': 40 };
+            const XP_PLANK_TO_REFINED = { 'Normal': 12, 'Oak': 18, 'Willow': 26, 'Teak': 36, 'Maple': 48, 'Acadia': 62,
+                'Mahogany': 78, 'Yew': 96, 'Magic': 116, 'Elder': 138, 'Eternal': 160 };
+            const XP_REFINED_TO_FRAME = { 'Normal': 54, 'Oak': 81, 'Willow': 117, 'Teak': 162, 'Maple': 216, 'Acadia': 279,
+                'Mahogany': 351, 'Yew': 432, 'Magic': 522, 'Elder': 621, 'Eternal': 720 };
+
+            const FRAME_TYPE_TO_TIER = {
+                'Wooden': 'Normal',
+                'Oak': 'Oak',
+                'Willow': 'Willow',
+                'Teak': 'Teak',
+                'Maple': 'Maple',
+                'Acadia': 'Acadia',
+                'Mahogany': 'Mahogany',
+                'Yew': 'Yew',
+                'Magic': 'Magic',
+                'Elder': 'Elder',
+                'Eternal': 'Eternal'
+            };
+
+            const BUILDINGS = [
+                [1, 'Grove T1', 2304, 3686.4, 8, 'Wooden'],
+                [1, 'Workshop T1', 2880, 4608, 8, 'Wooden'],
+                [10, 'Townhall T1', 4320, 6912, 10, 'Oak'],
+                [15, 'Chapel T1', 4320, 6912, 10, 'Oak'],
+                [20, 'Kitchen T1', 7488, 11980.8, 12, 'Willow'],
+                [25, 'Command Centre T1', 7488, 11980.8, 12, 'Willow'],
+                [35, 'Workshop T2', 17280, 27648, 20, 'Teak'],
+                [40, 'Guardhouse T1', 16128, 25804.8, 14, 'Maple'],
+                [45, 'Townhall T2', 25344, 40550.4, 22, 'Maple'],
+                [50, 'Grove T2', 17280, 27648, 20, 'Teak'],
+                [50, 'Kitchen T2', 32736, 52377.6, 22, 'Acadia'],
+                [50, "Ranger's Workroom T1", 20832, 33331.2, 14, 'Acadia'],
+                [54, "Botanist's T1", 5952, 9523.2, 4, 'Acadia'],
+                [55, 'Chapel T2', 35712, 57139.2, 24, 'Acadia'],
+                [60, 'Grove T3', 89856, 143769.6, 48, 'Mahogany'],
+                [65, "Ranger's T2", 44928, 71884.8, 24, 'Mahogany'],
+                [65, 'Guardhouse T2', 48672, 77875.2, 26, 'Mahogany'],
+                [70, 'Command Centre T2', 59904, 95846.4, 26, 'Yew'],
+                [75, 'Workshop T3', 110592, 176947.2, 48, 'Yew'],
+                [78, "Botanist's T2", 18432, 29491.2, 8, 'Yew'],
+                [80, "Ranger's T3", 116928, 187084.8, 42, 'Magic'],
+                [80, 'Townhall T3', 167040, 267264, 60, 'Magic'],
+                [85, 'Kitchen T3', 139200, 222720, 50, 'Magic'],
+                [90, 'Chapel T3', 165600, 264960, 50, 'Elder'],
+                [92, "Botanist's T3", 39744, 63590.4, 12, 'Elder'],
+                [95, 'Guardhouse T3', 231840, 370944, 70, 'Elder'],
+                [99, 'Command Centre T3', 264960, 423936, 80, 'Elder'],
+                [105, 'Eternal', 499950, 799920, 65, 'Eternal']
+            ];
+            BUILDINGS.sort((a, b) => a[0] - b[0]);
+
+            function getLevel(xp) {
+                if (xp >= 200000000) return 120;
+                let points = 0;
+                for (let lvl = 1; lvl < 120; lvl++) {
+                    points += Math.floor(lvl + 300 * Math.pow(2, lvl / 7));
+                    if (points / 4 >= xp) return lvl;
+                }
+                return 120;
+            }
+
+            function getXpForLevel(level) {
+                if (level >= 120) return 104273167;
+                let points = 0;
+                for (let lvl = 1; lvl < level; lvl++) {
+                    points += Math.floor(lvl + 300 * Math.pow(2, lvl / 7));
+                }
+                return Math.floor(points / 4);
+            }
+
+            function fmt(n) {
+                return Math.floor(n).toLocaleString();
+            }
+
+            function parseNumberInput(value) {
+                if (typeof value === 'string') {
+                    value = value.replace(/,/g, '');
+                }
+                const num = parseInt(value);
+                return isNaN(num) ? 0 : num;
+            }
+
+            function renderWoodSections() {
+                const container = document.getElementById('woodTypeContainer');
+                container.innerHTML = '';
+                TIERS.forEach((tier) => {
+                    const section = document.createElement('div');
+                    section.className = 'wood-section';
+                    section.dataset.tier = tier;
+
+                    const header = document.createElement('div');
+                    header.className = 'wood-header';
+                    header.innerHTML = `
+                            <input type="checkbox" class="wood-toggle" data-tier="${tier}">
+                            <span class="wood-name">${tier}</span>
+                            <span class="wood-summary" id="summary_${tier}">0 logs · 0 planks · 0 refined · 0 frames</span>
+                            <span class="toggle-icon" id="icon_${tier}">▶</span>
+                        `;
+                    section.appendChild(header);
+
+                    const body = document.createElement('div');
+                    body.className = 'wood-body';
+                    body.id = `body_${tier}`;
+                    body.innerHTML = `
+                            <div class="input-row">
+                                <label>🪵 <span class="label-text">Logs</span> <input type="text" class="mat-input" data-tier="${tier}" data-type="logs" value="0"></label>
+                                <label>📋 <span class="label-text">Planks</span> <input type="text" class="mat-input" data-tier="${tier}" data-type="planks" value="0"></label>
+                                <label>✨ <span class="label-text">Refined</span> <input type="text" class="mat-input" data-tier="${tier}" data-type="refined" value="0"></label>
+                                <label>🖼️ <span class="label-text">Frames</span> <input type="text" class="mat-input" data-tier="${tier}" data-type="frames" value="0"></label>
+                            </div>
+                        `;
+                    section.appendChild(body);
+
+                    header.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') return;
+                        const bodyEl = document.getElementById(`body_${tier}`);
+                        const icon = document.getElementById(`icon_${tier}`);
+                        bodyEl.classList.toggle('open');
+                        icon.classList.toggle('open');
+                    });
+
+                    const inputs = body.querySelectorAll('.mat-input');
+                    inputs.forEach(inp => {
+                        inp.addEventListener('focus', function() {
+                            this.select();
+                        });
+                        inp.addEventListener('input', function() {
+                            const raw = this.value.replace(/,/g, '');
+                            const num = parseInt(raw);
+                            if (!isNaN(num) && num >= 0) {
+                                this.value = fmt(num);
+                            } else if (raw === '' || raw === '-') {
+                                // allow empty
+                            } else {
+                                this.value = '0';
+                            }
+                            updateSummary(tier);
+                        });
+                        inp.addEventListener('blur', function() {
+                            if (this.value === '' || this.value === '-') {
+                                this.value = '0';
+                            }
+                            const num = parseNumberInput(this.value);
+                            this.value = fmt(num);
+                            updateSummary(tier);
+                        });
+                    });
+
+                    const checkbox = header.querySelector('.wood-toggle');
+                    checkbox.addEventListener('change', function() {
+                        const bodyEl = document.getElementById(`body_${tier}`);
+                        const icon = document.getElementById(`icon_${tier}`);
+                        if (this.checked) {
+                            bodyEl.classList.add('open');
+                            icon.classList.add('open');
+                        } else {
+                            bodyEl.classList.remove('open');
+                            icon.classList.remove('open');
+                        }
+                    });
+
+                    container.appendChild(section);
+                });
+            }
+
+            function updateSummary(tier) {
+                const inputs = document.querySelectorAll(`.mat-input[data-tier="${tier}"]`);
+                let logs = 0,
+                    planks = 0,
+                    refined = 0,
+                    frames = 0;
+                inputs.forEach(inp => {
+                    const val = parseNumberInput(inp.value);
+                    if (inp.dataset.type === 'logs') logs = val;
+                    else if (inp.dataset.type === 'planks') planks = val;
+                    else if (inp.dataset.type === 'refined') refined = val;
+                    else if (inp.dataset.type === 'frames') frames = val;
+                });
+                const summary = document.getElementById(`summary_${tier}`);
+                if (summary) {
+                    summary.textContent = `${fmt(logs)} logs · ${fmt(planks)} planks · ${fmt(refined)} refined · ${fmt(frames)} frames`;
+                }
+            }
+
+            function fetchHiscore() {
+                const rsn = document.getElementById('rsnInput').value.trim();
+                if (!rsn) {
+                    document.getElementById('fetchStatus').textContent = 'Enter a username first.';
+                    return;
+                }
+
+                const status = document.getElementById('fetchStatus');
+                status.innerHTML = 'Fetching... <span class="spinner"></span>';
+
+		const url =
+   		 `https://api.allorigins.win/raw?url=https://services.runescape.com/m=hiscore/index_lite.ws?player=${encodeURIComponent(rsn)}`;
+
+                fetch(url)
+                    .then(res => {
+                        if (!res.ok) throw new Error('Player not found or API error');
+                        return res.text();
+                    })
+                    .then(data => {
+                        const lines = data.split('\n');
+                        if (lines.length < 5) throw new Error('Invalid response');
+
+                        const conLine = lines[4] || '';
+                        const parts = conLine.split(',');
+                        if (parts.length < 3) throw new Error('Construction data not found');
+
+                        const xp = parseInt(parts[2]) || 0;
+                        document.getElementById('currentXp').value = fmt(xp);
+                        status.textContent = '✓ Fetched: ' + fmt(xp) + ' XP';
+                    })
+                    .catch(err => {
+                        status.textContent = '✗ ' + err.message;
+                    });
+            }
+
+            function getGoalXp() {
+                const goalValue = parseNumberInput(document.getElementById('goalValue').value);
+                const goalType = document.getElementById('goalType').value;
+
+                let goalXp;
+                if (goalType === 'level') {
+                    let level = Math.min(goalValue, 120);
+                    if (level < 1) level = 1;
+                    goalXp = getXpForLevel(level);
+                } else {
+                    goalXp = Math.min(goalValue, 200000000);
+                    if (goalXp < 0) goalXp = 0;
+                }
+                return goalXp;
+            }
+
+            let tierBreakdownData = {};
+
+            function calculate() {
+                const warningBox = document.getElementById('warningBox');
+                warningBox.style.display = 'none';
+                const resultArea = document.getElementById('resultArea');
+                resultArea.style.display = 'none';
+
+                let currentXp = parseNumberInput(document.getElementById('currentXp').value);
+                if (currentXp < 0) currentXp = 0;
+
+                const level = getLevel(currentXp);
+                const goalXp = getGoalXp();
+
+                const checkedTiers = [];
+                document.querySelectorAll('.wood-toggle').forEach(cb => {
+                    if (cb.checked) checkedTiers.push(cb.dataset.tier);
+                });
+
+                if (checkedTiers.length === 0) {
+                    warningBox.style.display = 'block';
+                    warningBox.innerHTML = 'Please check at least one wood type to calculate.';
+                    return;
+                }
+
+                const bank = {};
+                TIERS.forEach(t => { bank[t] = { logs: 0, planks: 0, refined: 0, frames: 0, active: false }; });
+                checkedTiers.forEach(tier => {
+                    bank[tier].active = true;
+                    const inputs = document.querySelectorAll(`.mat-input[data-tier="${tier}"]`);
+                    inputs.forEach(inp => {
+                        const val = parseNumberInput(inp.value);
+                        if (val >= 0) bank[tier][inp.dataset.type] = val;
+                    });
+                });
+
+                const framesByTier = {};
+                const processingByTier = {};
+                const logsUsed = {};
+                const planksUsed = {};
+                const refinedUsed = {};
+                const planksToRefinedMap = {};
+                const refinedToFramesMap = {};
+                let totalFrames = 0;
+                let totalProcessingXP = 0;
+
+                TIERS.forEach(tier => {
+                    if (!bank[tier].active) {
+                        framesByTier[tier] = 0;
+                        processingByTier[tier] = 0;
+                        logsUsed[tier] = 0;
+                        planksUsed[tier] = 0;
+                        refinedUsed[tier] = 0;
+                        planksToRefinedMap[tier] = 0;
+                        refinedToFramesMap[tier] = 0;
+                        return;
+                    }
+                    let logs = bank[tier].logs;
+                    let planks = bank[tier].planks;
+                    let refined = bank[tier].refined;
+                    let frames = bank[tier].frames;
+
+                    const planksFromLogs = logs;
+                    const totalPlanks = planks + planksFromLogs;
+                    const planksToRefined = Math.floor(totalPlanks / 4);
+                    const totalRefined = refined + planksToRefined;
+                    const refinedToFrames = Math.floor(totalRefined / 3);
+                    const framesFromTier = frames + refinedToFrames;
+
+                    const xpLogs = logs * (XP_LOG_TO_PLANK[tier] || 0);
+                    const xpPlanks = planksToRefined * (XP_PLANK_TO_REFINED[tier] || 0);
+                    const xpRefined = refinedToFrames * (XP_REFINED_TO_FRAME[tier] || 0);
+
+                    const tierXP = xpLogs + xpPlanks + xpRefined;
+
+                    framesByTier[tier] = framesFromTier;
+                    processingByTier[tier] = tierXP;
+                    logsUsed[tier] = logs;
+                    planksUsed[tier] = totalPlanks;
+                    refinedUsed[tier] = totalRefined;
+                    planksToRefinedMap[tier] = planksToRefined;
+                    refinedToFramesMap[tier] = refinedToFrames;
+                    totalFrames += framesFromTier;
+                    totalProcessingXP += tierXP;
+                });
+
+                const unlocked = BUILDINGS.filter(b => b[0] <= level);
+                const buildingPerTier = {};
+                let bestOverall = null;
+                let bestOverallXP = -1;
+
+                for (let tier of TIERS) {
+                    if (!bank[tier].active) continue;
+                    let bestForTier = null;
+                    let bestXP = -1;
+                    const available = framesByTier[tier] || 0;
+                    for (let b of unlocked) {
+                        const frameType = b[5];
+                        const neededTier = FRAME_TYPE_TO_TIER[frameType];
+                        if (neededTier !== tier) continue;
+                        if (available >= b[4]) {
+                            if (b[2] > bestXP) {
+                                bestXP = b[2];
+                                bestForTier = b;
+                            }
+                        }
+                    }
+                    if (bestForTier) {
+                        buildingPerTier[tier] = bestForTier;
+                        if (bestXP > bestOverallXP) {
+                            bestOverallXP = bestXP;
+                            bestOverall = bestForTier;
+                        }
+                    }
+                }
+
+                if (!bestOverall) {
+                    warningBox.style.display = 'block';
+                    warningBox.innerHTML =
+                        'You don\'t have enough materials to build any unlocked Fort building. Gather more frames or check different wood types.';
+                    return;
+                }
+
+                let buildXPBase = 0;
+                let buildXPActive = 0;
+
+                for (let tier of TIERS) {
+                    if (!bank[tier].active) continue;
+                    const building = buildingPerTier[tier];
+                    if (building) {
+                        const [, , bBase, bActive, framesReq] = building;
+                        const frames = framesByTier[tier] || 0;
+                        const buildsPossible = Math.floor(frames / framesReq);
+                        buildXPBase += buildsPossible * bBase;
+                        buildXPActive += buildsPossible * bActive;
+                    }
+                }
+
+                let totalBase = totalProcessingXP + buildXPBase;
+                let totalActive = totalProcessingXP + buildXPActive;
+
+                const outfitBonus = parseFloat(document.getElementById('outfitPieces').value) || 0;
+                const chisel = document.getElementById('chiselCheck').checked ? 0.01 : 0;
+                const relic = document.getElementById('relicCheck').checked ? 0.02 : 0;
+                const modifier = 1 + outfitBonus + chisel + relic;
+
+                const finalBase = totalBase * modifier;
+                const finalActive = totalActive * modifier;
+
+                resultArea.style.display = 'block';
+
+                const xpToGoalAFK = Math.max(0, goalXp - (currentXp + finalBase));
+                const xpToGoalActive = Math.max(0, goalXp - (currentXp + finalActive));
+
+                const levelAfterAFK = getLevel(currentXp + finalBase);
+                const levelAfterActive = getLevel(currentXp + finalActive);
+
+                const statBox = document.getElementById('resultStats');
+                statBox.innerHTML = `
+                        <div class="stat-box" style="border-left-color:#f5d742;">
+                            <div class="label">⭐ Current Level</div>
+                            <div class="value gold">${level}</div>
+                        </div>
+                        <div class="stat-box" style="border-left-color:#f48fb1;">
+                            <div class="label">📈 Level After (AFK)</div>
+                            <div class="value pink">${levelAfterAFK}</div>
+                        </div>
+                        <div class="stat-box" style="border-left-color:#4dd0e1;">
+                            <div class="label">⚡ Level After (Active)</div>
+                            <div class="value cyan">${levelAfterActive}</div>
+                        </div>
+                        <div class="stat-box"><div class="label">📦 Total Frames</div><div class="value">${fmt(totalFrames)}</div></div>
+                        <div class="stat-box"><div class="label">⚙️ Processing XP</div><div class="value blue">${fmt(totalProcessingXP)}</div></div>
+                        <div class="stat-box"><div class="label">🏗️ Building XP (AFK)</div><div class="value blue">${fmt(buildXPBase)}</div></div>
+                        <div class="stat-box"><div class="label">🏗️ Building XP (Active)</div><div class="value blue">${fmt(buildXPActive)}</div></div>
+                        <div class="stat-box"><div class="label">📊 Modifier</div><div class="value">+${((modifier-1)*100).toFixed(0)}%</div></div>
+                        <div class="stat-box" style="border-left-color:#f5d742;">
+                            <div class="label">💰 Total AFK</div>
+                            <div class="value gold">${fmt(finalBase)}</div>
+                        </div>
+                        <div class="stat-box" style="border-left-color:#4dd0e1;">
+                            <div class="label">⚡ Total Active</div>
+                            <div class="value cyan">${fmt(finalActive)}</div>
+                        </div>
+                        <div class="stat-box"><div class="label">🎯 Goal</div><div class="value purple">${fmt(goalXp)} XP</div></div>
+                        <div class="stat-box" style="border-left-color:#ffb74d;">
+                            <div class="label">🎯 XP to Goal (AFK)</div>
+                            <div class="value orange">${fmt(xpToGoalAFK)}</div>
+                        </div>
+                        <div class="stat-box" style="border-left-color:#6fcf97;">
+                            <div class="label">🎯 XP to Goal (Active)</div>
+                            <div class="value green">${fmt(xpToGoalActive)}</div>
+                        </div>
+                    `;
+
+                // --- Build tier breakdown data ---
+                tierBreakdownData = {};
+
+                for (let tier of TIERS) {
+                    if (!bank[tier].active) continue;
+                    const frames = framesByTier[tier] || 0;
+                    const procXP = processingByTier[tier] || 0;
+                    const logs = logsUsed[tier] || 0;
+                    const planks = planksUsed[tier] || 0;
+                    const refined = refinedUsed[tier] || 0;
+                    const planksToRefined = planksToRefinedMap[tier] || 0;
+                    const refinedToFrames = refinedToFramesMap[tier] || 0;
+                    const directRefined = bank[tier].refined || 0;
+                    const directFrames = bank[tier].frames || 0;
+
+                    const building = buildingPerTier[tier];
+                    let buildXP = 0,
+                        buildXPAct = 0,
+                        buildName = '—',
+                        framesPerBuild = 0,
+                        buildsPossible = 0,
+                        bBaseXP = 0,
+                        bActiveXP = 0;
+                    if (building) {
+                        const [, name, bBase, bActive, fpb] = building;
+                        buildsPossible = Math.floor(frames / fpb);
+                        buildXP = buildsPossible * bBase;
+                        buildXPAct = buildsPossible * bActive;
+                        buildName = name;
+                        framesPerBuild = fpb;
+                        bBaseXP = bBase;
+                        bActiveXP = bActive;
+                    }
+
+                    const totalXP = (procXP + buildXP) * modifier;
+                    const totalActiveXP = (procXP + buildXPAct) * modifier;
+
+                    tierBreakdownData[tier] = {
+                        logs: logs,
+                        planks: planks,
+                        refined: refined,
+                        frames: frames,
+                        directRefined: directRefined,
+                        directFrames: directFrames,
+                        planksToRefined: planksToRefined,
+                        refinedToFrames: refinedToFrames,
+                        totalFrames: frames,
+                        builds: buildsPossible,
+                        building: buildName,
+                        framesPerBuild: framesPerBuild,
+                        processingXP: procXP,
+                        buildingXPAFK: buildXP,
+                        buildingXPActive: buildXPAct,
+                        baseXPAFK: bBaseXP,
+                        baseXPActive: bActiveXP,
+                        totalAFK: totalXP,
+                        totalActive: totalActiveXP,
+                        modifier: modifier
+                    };
+                }
+
+                // --- Build the breakdown table ---
+                let breakHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;width:80px;">Wood Type</th>
+                                    <th>🖼️ Frames</th>
+                                    <th>🏗️ Builds</th>
+                                    <th>Building</th>
+                                    <th class="col-afk">💰 Total AFK</th>
+                                    <th class="col-active">⚡ Total Active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        `;
+
+                let grandFrames = 0,
+                    grandBuilds = 0,
+                    grandTotalAFK = 0,
+                    grandTotalActive = 0;
+
+                for (let tier of TIERS) {
+                    if (!bank[tier].active) continue;
+                    const data = tierBreakdownData[tier];
+                    if (!data || data.totalFrames === 0) continue;
+
+                    grandFrames += data.totalFrames;
+                    grandBuilds += data.builds;
+                    grandTotalAFK += data.totalAFK;
+                    grandTotalActive += data.totalActive;
+
+                    const rowId = 'row-' + tier.replace(/\s/g, '');
+                    const detailId = 'detail-' + tier.replace(/\s/g, '');
+
+                    breakHTML += `
+                            <tr class="clickable-row" id="${rowId}" data-target="${detailId}">
+                                <td style="text-align:left;font-weight:500;color:#d6def5;">
+                                    <span class="expand-icon" id="icon-${detailId}">▶</span> ${tier}
+                                </td>
+                                <td>${fmt(data.totalFrames)}</td>
+                                <td>${fmt(data.builds)}</td>
+                                <td>${data.building !== '—' ? '<span class="building-tag">' + data.building + '</span>' : '—'}</td>
+                                <td class="col-afk">${fmt(data.totalAFK)}</td>
+                                <td class="col-active">${fmt(data.totalActive)}</td>
+                            </tr>
+                            <tr class="breakdown-detail" id="${detailId}">
+                                <td colspan="6">
+                                    <div class="detail-inner">
+                                        <div class="detail-title">${tier} — Full Breakdown</div>
+
+                                        <div class="chain">
+                                            ${data.logs > 0 ? `🪵 ${fmt(data.logs)} Logs → ` : ''}
+                                            📋 ${fmt(data.planks)} Planks →
+                                            ✨ ${fmt(data.planksToRefined)} Refined ${data.directRefined > 0 ? `+ ${fmt(data.directRefined)} direct` : ''}
+                                            = ${fmt(data.refined)} total →
+                                            🖼️ ${fmt(data.refinedToFrames)} Frames ${data.directFrames > 0 ? `+ ${fmt(data.directFrames)} direct` : ''}
+                                            = <span class="highlight">${fmt(data.totalFrames)} total frames</span>
+                                        </div>
+
+                                        <div class="stats-grid">
+                                            <div class="stat-item">
+                                                <span class="label">🏗️ Building</span>
+                                                <span class="value">${data.building}</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">📦 Frames / Build</span>
+                                                <span class="value">${fmt(data.framesPerBuild)}</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">🔨 Builds</span>
+                                                <span class="value">${fmt(data.builds)}</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">⚙️ Processing XP</span>
+                                                <span class="value blue">${fmt(data.processingXP)}</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">🏗️ Building XP (AFK)</span>
+                                                <span class="value">${fmt(data.buildingXPAFK)}</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">🏗️ Building XP (Active)</span>
+                                                <span class="value">${fmt(data.buildingXPActive)}</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">📊 Modifier</span>
+                                                <span class="value">+${((data.modifier-1)*100).toFixed(0)}%</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">💰 Total AFK</span>
+                                                <span class="value gold">${fmt(data.totalAFK)}</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="label">⚡ Total Active</span>
+                                                <span class="value cyan">${fmt(data.totalActive)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                }
+
+                breakHTML += `
+                            <tr class="total-row">
+                                <td style="text-align:left;">💰 TOTAL</td>
+                                <td>${fmt(grandFrames)}</td>
+                                <td>${fmt(grandBuilds)}</td>
+                                <td></td>
+                                <td class="col-afk">${fmt(grandTotalAFK)}</td>
+                                <td class="col-active">${fmt(grandTotalActive)}</td>
+                            </tr>
+                        `;
+
+                breakHTML += '</tbody></table>';
+                document.getElementById('breakdownTableWrap').innerHTML = breakHTML;
+
+                // --- Click handlers ---
+                document.querySelectorAll('.clickable-row').forEach(row => {
+                    row.addEventListener('click', function() {
+                        const targetId = this.dataset.target;
+                        const detailRow = document.getElementById(targetId);
+                        const icon = document.getElementById('icon-' + targetId);
+                        if (detailRow) {
+                            detailRow.classList.toggle('open');
+                            if (icon) {
+                                icon.classList.toggle('open');
+                            }
+                        }
+                    });
+                });
+            }
+
+            renderWoodSections();
+
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('mat-input')) {
+                    updateSummary(e.target.dataset.tier);
+                }
+            });
+
+            document.getElementById('calcBtn').addEventListener('click', calculate);
+            document.getElementById('fetchHiscoreBtn').addEventListener('click', fetchHiscore);
+
+            document.getElementById('goalValue').addEventListener('blur', function() {
+                const val = parseNumberInput(this.value);
+                if (val >= 0) {
+                    this.value = fmt(val);
+                } else {
+                    this.value = '0';
+                }
+            });
+
+            document.getElementById('goalValue').addEventListener('focus', function() {
+                this.select();
+            });
+
+            document.getElementById('goalValue').addEventListener('input', function() {
+                const raw = this.value.replace(/,/g, '');
+                const num = parseInt(raw);
+                if (!isNaN(num) && num >= 0) {
+                    this.value = fmt(num);
+                } else if (raw === '' || raw === '-') {
+                    // allow empty
+                } else {
+                    this.value = '0';
+                }
+            });
+
+            document.getElementById('currentXp').addEventListener('blur', function() {
+                const val = parseNumberInput(this.value);
+                if (val >= 0) {
+                    this.value = fmt(val);
+                } else {
+                    this.value = '0';
+                }
+            });
+
+            document.getElementById('currentXp').addEventListener('focus', function() {
+                this.select();
+            });
+
+            document.getElementById('currentXp').addEventListener('input', function() {
+                const raw = this.value.replace(/,/g, '');
+                const num = parseInt(raw);
+                if (!isNaN(num) && num >= 0) {
+                    this.value = fmt(num);
+                } else if (raw === '' || raw === '-') {
+                    // allow empty
+                } else {
+                    this.value = '0';
+                }
+            });
+
+            window.addEventListener('DOMContentLoaded', calculate);
+        })();
+    </script>
+</body>
+</html>
