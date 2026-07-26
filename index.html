@@ -343,7 +343,6 @@
             transform: rotate(90deg);
         }
 
-        /* Expanded row details - cleaner version */
         .breakdown-detail {
             display: none;
             background: #0a101c;
@@ -367,7 +366,6 @@
             font-size: 0.85rem;
             margin-bottom: 4px;
         }
-        /* Chain line */
         .breakdown-detail .detail-inner .chain {
             color: #b3c0e2;
             font-family: monospace;
@@ -379,10 +377,6 @@
         .breakdown-detail .detail-inner .chain .highlight {
             color: #f5d742;
         }
-        .breakdown-detail .detail-inner .chain .highlight-active {
-            color: #4dd0e1;
-        }
-        /* Stats grid - 2 columns */
         .breakdown-detail .detail-inner .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -417,14 +411,6 @@
         }
         .breakdown-detail .detail-inner .stats-grid .stat-item .value.blue {
             color: #7a9cf5;
-        }
-        /* XP formula note */
-        .breakdown-detail .detail-inner .formula-note {
-            font-size: 0.7rem;
-            color: #6a78a0;
-            border-top: 1px solid #1a2238;
-            padding-top: 4px;
-            margin-top: 4px;
         }
 
         @media (max-width: 700px) {
@@ -586,7 +572,7 @@
                 [92, "Botanist's T3", 39744, 63590.4, 12, 'Elder'],
                 [95, 'Guardhouse T3', 231840, 370944, 70, 'Elder'],
                 [99, 'Command Centre T3', 264960, 423936, 80, 'Elder'],
-                [105, 'Eternal', 499950, 799920, 65, 'Eternal']
+                [105, 'Eternal T3', 499950, 799920, 65, 'Eternal']
             ];
             BUILDINGS.sort((a, b) => a[0] - b[0]);
 
@@ -723,39 +709,69 @@
                 }
             }
 
+            let isFetching = false;
+            let lastFetchTime = 0;
+            const FETCH_COOLDOWN = 3000;
+
             function fetchHiscore() {
+                const button = document.getElementById('fetchHiscoreBtn');
+                const status = document.getElementById('fetchStatus');
                 const rsn = document.getElementById('rsnInput').value.trim();
+
                 if (!rsn) {
-                    document.getElementById('fetchStatus').textContent = 'Enter a username first.';
+                    status.textContent = 'Enter a username first.';
                     return;
                 }
 
-                const status = document.getElementById('fetchStatus');
+                if (isFetching) {
+                    status.textContent = '⏳ Already fetching...';
+                    return;
+                }
+
+                const now = Date.now();
+                if (now - lastFetchTime < FETCH_COOLDOWN) {
+                    const waitTime = Math.ceil((FETCH_COOLDOWN - (now - lastFetchTime)) / 1000);
+                    status.textContent = `⏳ Please wait ${waitTime}s before trying again.`;
+                    return;
+                }
+
                 status.innerHTML = 'Fetching... <span class="spinner"></span>';
+                button.disabled = true;
+                isFetching = true;
+                lastFetchTime = now;
 
-const url =
-   const url =
-    `https://api.allorigins.win/raw?url=${encodeURIComponent('https://services.runescape.com/m=hiscore/index_lite.ws?player=' + rsn)}&_=${Date.now()}`;
+                const url =
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent('https://services.runescape.com/m=hiscore/index_lite.ws?player=' + rsn)}&_=${Date.now()}`;
 
-                fetch(url)
+                fetch(url, { cache: 'no-store' })
                     .then(res => {
                         if (!res.ok) throw new Error('Player not found or API error');
                         return res.text();
                     })
                     .then(data => {
                         const lines = data.split('\n');
-                        if (lines.length < 5) throw new Error('Invalid response');
+                        if (lines.length < 24) throw new Error('Invalid response');
 
-                        const conLine = lines[23] || '';
+                        const CONSTRUCTION_INDEX = 23;
+                        const conLine = lines[CONSTRUCTION_INDEX] || '';
                         const parts = conLine.split(',');
+
                         if (parts.length < 3) throw new Error('Construction data not found');
 
                         const xp = parseInt(parts[2]) || 0;
+                        const level = parseInt(parts[1]) || 1;
+
                         document.getElementById('currentXp').value = fmt(xp);
-                        status.textContent = '✓ Fetched: ' + fmt(xp) + ' XP';
+                        status.textContent = '✓ Fetched: ' + fmt(xp) + ' XP (Level ' + level + ' Construction)';
                     })
                     .catch(err => {
+                        console.error('Fetch error:', err);
                         status.textContent = '✗ ' + err.message;
+                    })
+                    .finally(() => {
+                        button.disabled = false;
+                        button.textContent = '🔍 Lookup';
+                        isFetching = false;
                     });
             }
 
@@ -970,7 +986,6 @@ const url =
                         </div>
                     `;
 
-                // --- Build tier breakdown data ---
                 tierBreakdownData = {};
 
                 for (let tier of TIERS) {
@@ -1031,7 +1046,6 @@ const url =
                     };
                 }
 
-                // --- Build the breakdown table ---
                 let breakHTML = `
                         <table>
                             <thead>
@@ -1148,7 +1162,6 @@ const url =
                 breakHTML += '</tbody></table>';
                 document.getElementById('breakdownTableWrap').innerHTML = breakHTML;
 
-                // --- Click handlers ---
                 document.querySelectorAll('.clickable-row').forEach(row => {
                     row.addEventListener('click', function() {
                         const targetId = this.dataset.target;
